@@ -188,7 +188,7 @@ class NoiseTest(ImagesTest):
         # Image 3
         images.append(Image.new("RGB", (640, 480), "black"))
         draw = ImageDraw.Draw(images[2])
-        draw.rectangle([(500, 300), (200, 200)], fill=(0, 0, 255))
+        draw.rectangle([(500, 300), (200, 100)], fill=(0, 0, 255))
         r = 1
         for x, y in [(100, 150), (400, 200)]:
             draw.ellipse((x - r, y - r, x + r, y + r), fill=(255, 0, 0))

@@ -32,11 +32,13 @@ class MainApplication(tk.Frame):
         self.Frame2 = tk.Frame(self.parent, borderwidth=2, relief=tk.GROOVE)
         data_label = tk.Label(self.Frame2, text="Dataset", relief=tk.GROOVE, font='Verdana 20 bold')
         data_label.pack()
-        self.data_var = [tk.IntVar(0), tk.IntVar(0)]
+        self.data_var = [tk.IntVar(0), tk.IntVar(0), tk.IntVar(0)]
         self.data1 = tk.Checkbutton(self.Frame2, text="Basic", variable=self.data_var[0])
         self.data2 = tk.Checkbutton(self.Frame2, text="Noise", variable=self.data_var[1])
+        self.data3 = tk.Checkbutton(self.Frame2, text="Berkeley", variable=self.data_var[2])
         self.data1.pack(padx=10, pady=5)
         self.data2.pack(padx=10, pady=5)
+        self.data3.pack(padx=10, pady=5)
         self.Frame2.grid(column=2, row=0, padx=10, pady=10)
 
         # frame 3
@@ -54,7 +56,7 @@ class MainApplication(tk.Frame):
         global algo_choice
         global data_choice
         algo_choice = [self.algo_var[0].get(), self.algo_var[1].get()]
-        data_choice = [self.data_var[0].get(), self.data_var[1].get()]
+        data_choice = [self.data_var[0].get(), self.data_var[1].get(), self.data_var[2].get()]
         if 1 not in algo_choice or 1 not in data_choice:
             pass
         else:

@@ -7,6 +7,7 @@ from sr_object_segmentation.blobs_segmentation import BlobsSegmentation
 from sr_object_segmentation.color_segmentation import ColorSegmentation
 from sr_benchmarking.drawing import BasicTest
 from sr_benchmarking.drawing import NoiseTest
+from sr_benchmarking.berkeley import Berkeley
 from sr_benchmarking.interface import run_interface
 from sr_benchmarking.interface import show_results
 
@@ -45,7 +46,7 @@ class TestObjectSegmentation(object):
     def test_distance(self):
         """ 
         If segments are not perfectly the same, this test measures the magnitude of the difference
-        @return - a score corresponding to the minimal distance between a wrong point and the theorical,
+        @return - a score corresponding to the minimal distance between a wrong point and the theoretical,
         divided by 5 (arbitrary)
         """
         print 'DISTANCE TEST ...'
@@ -58,11 +59,11 @@ class TestObjectSegmentation(object):
 
         corresp = get_corresp_seg(min_seg, max_seg)
         dist_seg = get_dist_seg(min_seg, max_seg, corresp)
-
         if len(dist_seg) == 0:
             return 0
         else:
-            return 0.02 * sum(dist_seg) / len(dist_seg)  # 0.02 is arbitrary, need some adjustments..
+            print 'score dist', 0.02 * sum(dist_seg) / len(dist_seg)
+            return 0.2 * sum(dist_seg) / len(dist_seg)  # 0.2 is arbitrary, need some adjustments..
 
     def score(self):
         """
@@ -86,9 +87,11 @@ def get_corresp_seg(min_seg, max_seg):
         m = {}
         for id_max_seg in range(len(max_seg)):
             m[id_max_seg] = len(set(min_seg[id_min_seg]) & set(max_seg[id_max_seg]))
-        # match[id_min_seg] = m
+        print 'm', m
         inv_m = dict(zip(m.values(), m.keys()))
+        print 'inv_m', inv_m
         maxi = sorted(m.values(), reverse=True)
+        print 'maxi', maxi
         for k in range(len(m)):
             if inv_m[maxi[-k]] not in corresp.values():
                 corresp[id_min_seg] = inv_m[maxi[-k]]
@@ -108,6 +111,7 @@ def get_dist_seg(min_seg, max_seg, corresp):
     @return - list of the minimal distances, for each misplaced point
     """
     dist_seg = []
+    print 'corresp', corresp
     for seg in range(len(min_seg.values())):
         seg1 = min_seg[seg]
         seg2 = max_seg[corresp[seg]]
@@ -136,11 +140,18 @@ def run_test(algo, dataset, writing=False):
     """
     results = ''
     for i, img in enumerate(dataset.np_img):
+        score = 0
         r = '\n\n' + str(algo) + '\n\n ##### Test ' + dataset.name + str(i + 1) + '#####\n'
         print r
         results += r
-        test = TestObjectSegmentation(img, algo, dataset.ref_seg[i])
-        score = test.score()
+        if dataset.name == 'Berkeley':
+            for j in range(len(dataset.ref_seg[i])):
+                test = TestObjectSegmentation(img, algo, dataset.ref_seg[i][j])
+                score += test.score()
+        else:
+            test = TestObjectSegmentation(img, algo, dataset.ref_seg[i])
+            score = test.score()
+        score = score * 1.0 / len(dataset.ref_seg)
         r = '\nTOTAL SCORE :' + str(score)
         print r
         results += r
@@ -160,7 +171,7 @@ if __name__ == '__main__':
 
     # Algorithms and datasets available
     algos = [BlobsSegmentation, ColorSegmentation]
-    datasets = [BasicTest(), NoiseTest()]
+    datasets = [BasicTest(), NoiseTest(), Berkeley()]
 
     # Get back the choices from the user
     algo_id = [i for (i, e) in enumerate(algo_choice) if e != 0]

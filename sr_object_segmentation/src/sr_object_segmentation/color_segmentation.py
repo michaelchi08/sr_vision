@@ -22,32 +22,28 @@ class ColorSegmentation(SrObjectSegmentation):
 
     def segmentation(self):
         """
-        Segmente the image according to the color given as parameter
-        @return - dictionnary of segments found with points coordinates
+        Segment the image according to the color given as parameter
+        @return - dictionary of segments found with points coordinates
         """
-        img = self.img
-
-        width = img.shape[0]
-        height = img.shape[1]
+        width = self.img.shape[0]
+        height = self.img.shape[1]
 
         dic = {}
-        dic_fin = {}
-
-        main_colors = get_main_color(self.img, 4)
+        main_colors = get_main_color(self.img, 6)
         for i, color in enumerate(main_colors):
             pts = []
             for x in range(width):
                 for y in range(height):
-                    if list(img[(x, y)]) == list(color):
+                    if list(self.img[(x, y)]) == list(color):
                         pts.append((x, y))
             dic[i] = pts
 
         # Sort by descending size of segments
-        seg_by_length = sorted(dic.values(), key=len, reverse=True)[1:]  # Remove the background (basic and noise test)
+        seg_by_length = sorted(dic.values(), key=len, reverse=True)  # Remove the background (basic and noise test)
+        dic = {}
         for i in range(len(seg_by_length)):
-            dic_fin[i] = seg_by_length[i]
-
-        return dic_fin
+            dic[i] = seg_by_length[i]
+        return dic
 
 
 def get_main_color(np_img, max_nb_col):
@@ -57,9 +53,8 @@ def get_main_color(np_img, max_nb_col):
     @param max_nb_col: number of maximum colors to be returned
     @return: a list of the main colors present in the image (RGB format)
     """
-
     pil_img = Image.fromarray(np_img)
-    colors = pil_img.getcolors(256)
+    colors = pil_img.getcolors(pil_img.size[0] * pil_img.size[1])
     sorted_colors = sorted(colors, key=lambda col: col[0:], reverse=True)
     if len(sorted_colors) < max_nb_col:
         nb_col = len(sorted_colors)

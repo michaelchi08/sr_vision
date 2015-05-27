@@ -5,6 +5,7 @@ from PIL import Image
 import tarfile
 import os
 import shutil
+import numpy as np
 
 from sr_benchmarking.drawing import ImagesTest
 
@@ -12,21 +13,27 @@ from sr_benchmarking.drawing import ImagesTest
 class Berkeley(ImagesTest):
     def __init__(self):
         """
-        Initialize the Berkeley dataset object
+        Initialize the Berkeley dataset object, downloading files if absent
         """
         ImagesTest.__init__(self)
-        self.name = 'berkeley'
-        self.files_id = ['3096', '167083', '167062', '227092']
-        self.np_img = [Image.open('sr_benchmarking/BSDS300/' + img + '.jpg') for img in self.files_id]
+        self.name = 'Berkeley'
+        self.files_id = ['3096', '86000', '167062', '227092']
+        try:
+            os.listdir('sr_benchmarking/BSDS300/')
+        except:
+            self.download_images()
         for file_id in self.files_id:
             self.ref_seg.append(read_seg_file(file_id))
+        self.pil_img = [Image.open('sr_benchmarking/BSDS300/' + img + '.jpg') for img in self.files_id]
+        self.np_img = [np.array(self.pil_img[i]) for i in range(len(self.pil_img))]
 
     def download_images(self):
         """
         Download the dataset from the berkeley website
         """
+        print "Downloading Berkeley's dataset..."
 
-        # Download the archives
+        # Download the archives if absent
         if not 'BSDS300-images.tgz' in os.listdir('.'):
             images_archive = urllib.URLopener()
             images_archive.retrieve("http://www.eecs.berkeley.edu/Research/Projects/CS/vision/bsds/BSDS300-images.tgz",
@@ -74,58 +81,58 @@ def read_seg_file(img_id):
     Read a segmentation .seg file to get the segments and points corresponding
     @param img_id - id of the image from the Berkeley dataset
     """
-
-    # Open the seg file
-    print img_id
     files = open_seg_files(img_id)
 
-    # Header
-    for f in files:
-        for i in range(11):
-            f.readline()
-
-    # Reading file
+    # Reading file (with the 11 lines header)
     lines = []
-    for line in f:
-        lines.append([int(x) for x in line.split()])
-    f.close()
+    for i, f in enumerate(files):
+        lines.append([])
+        for header in range(11):
+            f.readline()
+        for line in f:
+            lines[i].append([int(x) for x in line.split()])
+        f.close()
 
-    # Dictionary with segments id as keys and coordinates as values
+    dic_list = []
+    for i in range(len(lines)):
+        dic_list.append(make_dictionary(lines[i]))
+    return dic_list
+
+
+def make_dictionary(lines):
+    """
+    Translate the segmentation files into a dictionary with segments and points coordinates
+    @param lines - Lines of the seg files, as a list for each human
+    @return - Dictionary with segments id as keys and coordinates as values
+    """
     dic = {}
-    coordinates = []
     for line in lines:
+        coordinates = []
         for y in range(line[2], line[3]):
             coordinates.append((line[1], y))
         dic[line[0]] = coordinates
 
-
     # Sort by descending size of segments
-
-    seg_by_length = sorted(dic.values(), key=len, reverse=True)  # delete the background (biggest segment)
-    dic_fin = {}
+    seg_by_length = sorted(dic.values(), key=len, reverse=True)
+    dic = {}
     for i in range(len(seg_by_length)):
-        dic_fin[i] = seg_by_length[i]
-
-    return dic_fin
+        dic[i] = seg_by_length[i]
+    return dic
 
 
 def open_seg_files(img_id):
-    # Open the seg files
+    """
+    Open the segmentation files
+    @param img_id - ID of the image, from the Berkeley's dataset
+    @return - List of the files, opened for reading
+    """
     files = []
-    i = 0
-    while True:
+    for i in range(25):
         path = 'sr_benchmarking/BSDS300/' + img_id + '_' + str(i) + '.seg'
-        print path
         try:
             f = open(path, 'r')
         except IOError:
-            break
+            pass
         else:
             files.append(f)
-            i += 1
     return files
-
-# read_seg_file('lvl1_1')
-# read_seg_file('3096',berkeley=True)
-
-Berkeley()
