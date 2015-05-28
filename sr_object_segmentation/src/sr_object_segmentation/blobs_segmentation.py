@@ -22,8 +22,8 @@ class BlobsSegmentation(SrObjectSegmentation):
 
     def segmentation(self):
         """
-        Segmente the image into blobs 
-        @return - dictionnary of segments found with points coordinates
+        Segment the image into blobs
+        @return - dictionary of segments found with points coordinates
         """
 
         img = sCV.Image(self.img)
@@ -38,9 +38,8 @@ class BlobsSegmentation(SrObjectSegmentation):
             # Return the whole of points from each blob as a dictionary
             blobs = blobs.sortArea()[::-1]
             dic = {}
-            k = 0
 
-            for blob in blobs:
+            for k, blob in enumerate(blobs):
                 points = []
                 xmin, ymin = blob.minX(), blob.minY()
                 xmax, ymax = blob.maxX(), blob.maxY()
@@ -49,7 +48,6 @@ class BlobsSegmentation(SrObjectSegmentation):
                         if blob.contains((x, y)):
                             points.append((x, y))
                 dic[k] = points
-                k += 1
 
             # Sort by descending size of segments
             seg_by_length = sorted(dic.values(), key=len, reverse=True)

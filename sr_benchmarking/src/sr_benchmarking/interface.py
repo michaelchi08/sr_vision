@@ -80,6 +80,34 @@ class Result(tk.Frame):
         self.box_text.insert(tk.INSERT, res)
         self.box_text.pack(padx=10, pady=10)
 
+class Result2:
+    def __init__(self, res):
+        self.root=Tk()
+        self.root.title('Tableau - v.01')
+
+        for k in range(4):
+            basic=Button(self.root, text='Basic '+str(k+1))
+            basic.grid(row=0,column=k+1,sticky=NSEW)
+            noise=Button(self.root, text='Noise '+str(k+1))
+            noise.grid(row=0,column=k+5,sticky=NSEW)
+            berkeley=Button(self.root, text='Berkeley '+str(k+1))
+            berkeley.grid(row=0,column=k+9,sticky=NSEW)
+        self.root.grid_rowconfigure(0, weight=1)
+        for m in range(2):
+            b=Button(self.root, text=str(m+1), width=5)
+            b.grid(row=m+1,column=0,sticky=NSEW)
+        #self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
+        for i in range(2):
+            for j in range(12):
+                e = Entry(self.root)
+                e.grid(row=i+1, column=j+1)
+                e.insert(INSERT, '(%d , %d)' % (i, j))
+                self.root.grid_columnconfigure(j, weight=1)
+
+            self.root.grid_rowconfigure(i+1, weight=1)
+        self.root.mainloop()
 
 def run_interface():
     """
@@ -98,5 +126,5 @@ def show_results(res):
     @param res - results as a string
     """
     root = tk.Tk()
-    Result(root, res)
+    Result2(root, res)
     root.mainloop()
