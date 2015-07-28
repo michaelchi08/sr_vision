@@ -210,6 +210,7 @@ add_executable(cloud_services
 
 add_dependencies(cloud_services
   sr_grasp_msgs_gencpp
+  sr_vision_msgs_gencpp
   ${catkin_EXPORTED_TARGETS}
 )
 
