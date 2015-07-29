@@ -18,19 +18,25 @@ class Utils(object):
     Utils methods for the sr_vision package
     """
 
-    def __init__(self, color):
+    def __init__(self, color, image=None, ):
         self.color = color
 
         self.bridge = CvBridge()
         self.depth = None
         self.cam_info = None
 
-        self.image_sub = rospy.Subscriber('camera/image_raw', Image,
-                                          self.image_callback)
-        self.depth_sub = rospy.Subscriber('camera/depth/image_rect_raw', Image,
-                                          self.depth_callback)
-        self.cam_info = rospy.Subscriber('camera/camera_info', CameraInfo,
-                                         self.cam_info_callback)
+        if image is not None:
+            self.frame = image
+            self.mask = self.get_mask(self.color)
+            self.closing = self.get_closing(self.mask)
+        else:
+            self.image_sub = rospy.Subscriber('camera/image_raw', Image,
+                                              self.image_callback)
+            self.depth_sub = rospy.Subscriber('camera/depth/image_rect_raw',
+                                              Image,
+                                              self.depth_callback)
+            self.cam_info = rospy.Subscriber('camera/camera_info', CameraInfo,
+                                             self.cam_info_callback)
 
     def depth_callback(self, data):
         """

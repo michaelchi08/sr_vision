@@ -5,7 +5,13 @@ project(sr_object_segmentation)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 
-find_package(catkin REQUIRED COMPONENTS cv_bridge dynamic_reconfigure message_generation image_transport)
+find_package(catkin REQUIRED COMPONENTS 
+  cv_bridge
+  dynamic_reconfigure
+  message_generation
+  image_transport
+  rosunit
+)
 
 find_package(OpenCV REQUIRED)
 if (OpenCV_VERSION VERSION_EQUAL "3")
@@ -162,4 +168,4 @@ catkin_package(
 # endif()
 
 ## Add folders to be run by python nosetests
-catkin_add_nosetests(test)
+catkin_add_nosetests(test/test_segmentation.py)
