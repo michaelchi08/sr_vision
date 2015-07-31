@@ -78,8 +78,8 @@ class TestSegmentation(unittest.TestCase):
         """
         Verify that the segmented objects are well-located
         """
-        self.wellLocated(self.segments[0], (210, 265))
-        self.wellLocated(self.segments[1], (550, 270))
+        self.wellLocated(self.segments[0], (525, 335))
+        self.wellLocated(self.segments[1], (225, 245))
 
     def test_size(self):
         """
