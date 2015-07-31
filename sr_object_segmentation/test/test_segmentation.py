@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 import os
-import numpy as np
-
-from sr_object_tracking.utils import Utils
-
 import unittest
+import rospkg
+import rosbag
+import numpy as np
 
 from sr_object_segmentation.shape_color_segmentation import \
     ShapeColorSegmentation
+from sr_object_tracking.utils import Utils
 
 PKG = 'sr_object_segmentation'
 
@@ -20,9 +20,7 @@ class TestSegmentation(unittest.TestCase):
         """
         Initialization
         """
-        image = np.load(
-            os.path.dirname(os.path.realpath(__file__)) + '/image_test.npy')
-
+        image = self.bag_read_all('segmentation_test.bag')[0]
         color = 'red'
         shape = np.load(os.path.dirname(os.path.dirname(
             os.path.realpath(__file__))) + '/shapes/dataset/strawberry.npy')
@@ -35,25 +33,19 @@ class TestSegmentation(unittest.TestCase):
         self.nb_segments = self.algo.nb_segments
         self.segments = self.algo.segmented_box
 
-    def test_not_empty(self):
-        """
-        Verify that the number of segmented objects is not null
-        """
-        self.assertNotEqual(self.nb_segments, 0)
+    # Util methods
+    ###############
 
-    def test_centroid(self):
-        """
-        Verify that the segmented objects are well-located
-        """
-        self.wellLocated(self.segments[0], (570, 420))
-        self.wellLocated(self.segments[1], (520, 420))
-
-    def test_size(self):
-        """
-        Verify that the segmented objects size is correct
-        """
-        self.wellSized(self.segments[0], (95, 125))
-        self.wellSized(self.segments[1], (120, 145))
+    def bag_read_all(self, f):
+        """Read all messages from the given bag file. Path is relative to
+        test dir."""
+        rp = rospkg.RosPack()
+        bag_file = os.path.join(rp.get_path(PKG), 'test', f)
+        bag = rosbag.Bag(bag_file)
+        msgs = []
+        for topic, msg, t in bag.read_messages():
+            msgs.append(msg)
+        return msgs
 
     def wellLocated(self, seg, theo):
         t = 50
@@ -72,6 +64,29 @@ class TestSegmentation(unittest.TestCase):
                                  theo[0] + t) and h in xrange(
             theo[1] - t, theo[1] + t)
         return well_sized
+
+    # Tests
+    ########
+
+    def test_not_empty(self):
+        """
+        Verify that the number of segmented objects is not null
+        """
+        self.assertNotEqual(self.nb_segments, 0)
+
+    def test_centroid(self):
+        """
+        Verify that the segmented objects are well-located
+        """
+        self.wellLocated(self.segments[0], (210, 265))
+        self.wellLocated(self.segments[1], (550, 270))
+
+    def test_size(self):
+        """
+        Verify that the segmented objects size is correct
+        """
+        self.wellSized(self.segments[0], (95, 125))
+        self.wellSized(self.segments[1], (120, 145))
 
 
 if __name__ == '__main__':

@@ -26,7 +26,7 @@ class Utils(object):
         self.cam_info = None
 
         if image is not None:
-            self.frame = image
+            self.frame = self.convert_image(image, "bgr8")
             self.mask = self.get_mask(self.color)
             self.closing = self.get_closing(self.mask)
         else:
