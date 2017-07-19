@@ -5,7 +5,7 @@
   <arg name="max_new_marker_error" default="0.08" />
   <arg name="max_track_error" default="0.0" />
   <arg name="bundle_files" default="$(find sr_description_common)/ar_markers/ar_marker_0_1_2_3_a4.xml" />
-  <arg name="continuous" default="false"/>
+  <arg name="continuous" default="true"/>
   <arg name="window_width" default="100" />
   <arg name="camera_root_frame" default="camera_link" />
   <arg name="desired_camera_parent_frame" default="ra_base_link" />
