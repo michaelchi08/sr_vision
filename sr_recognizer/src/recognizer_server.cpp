@@ -140,7 +140,7 @@ void RecognizerROS::recognize_cb(const sr_recognizer::RecognizerGoalConstPtr &go
         pcl::io::loadPCDFile(test_file, *inputCloudPtr);
     else
     {
-        if (!nh_.getParam("topic", topic_ ))
+        if (!nh_.getParam("recognizer_server/topic", topic_ ))
         {
             topic_ = "/camera/depth_registered/points";
         }

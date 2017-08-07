@@ -28,7 +28,7 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS 
+  CATKIN_DEPENDS
   actionlib_msgs
   std_msgs
   geometry_msgs
