@@ -1,6 +1,14 @@
 <launch>
-	<!-- Finding 3D poses of the objects detected -->
 
+    <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_camera_front_tf" args="0.15 0.1 0 0 0 0 /world /camera_link" />
+
+    <include file="$(find astra_launch)/launch/astra.launch">
+       <arg name="camera" default="camera" />
+       <arg name="device_id" default="#1"/>
+    </include>
+
+
+	<!-- Finding 3D poses of the objects detected -->
 	<node name="find_object_3d" pkg="find_object_2d" type="find_object_2d" output="screen">
 		<param name="gui" value="true" type="bool"/>
 		<param name="settings_path" value="~/.ros/find_object_2d.ini" type="str"/>
