@@ -46,7 +46,7 @@
 	        <param name="stereo_algorithm" value="0" />
 	        <param name="min_disparity" value="4" />
 	        <param name="disparity_range" value="128" />
-            <param name="correlation_window_size" value="35" />
+            <param name="correlation_window_size" value="15" />
 	    </node>
         <include file="$(find sr_camera_pose_estimation)/launch/mock_world_transforms.launch" />
 
